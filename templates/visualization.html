@@ -15,15 +15,116 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    
+    <style>
+        .section {
+            position: relative;
+            padding-left: 120px;
+            margin-bottom: 10px;
+        }
+        
+        label {
+            width: 120px;
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        .tweet {
+            margin-bottom: 5px;
+        }
+        
+        .tweet-author {
+            font-style: italic;
+        }
+        .tweet-time {
+            float: left;
+            display: block;
+            width: 150px;
+        }
+        .tweet-content {
+            padding-left: 150px;
+        }
+    </style>
   </head>
   <body>
     <div class="container">
-        <h1>Hello, world!</h1>
+        <h1>Stream Status</h1>
+        
+        <div class="section">
+            <label>Updated at:</label>
+            <span class="updated-time"></span>
+        </div>
+        
+        <div class="section">
+            <label>Tweet Count:</label>
+            <span class="tweet-count"></span>
+        </div>
+        
+        <div class="section">
+            <label>Latest Tweets:</label>
+            <div class="tweets"></div>
+        </div>
     </div>
+    
+    <script type="text/template" id='tweet-template'>
+        <div class="tweet">
+            <span class="tweet-time"></span>
+            <div class="tweet-content">
+                <span class="tweet-author"></span>:
+                <span class="tweet-text"></span>
+            </div>
+        </div>
+    </script>
+    
+    <script>
+        window.initial_data = {{ initial_data }};
+        window.urls = {{ urls }};
+    </script>
     
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    
+    <script>
+        var render = function(data) {
+            var now = new Date();
+            
+            
+            $('.tweet-count').text(data.count);
+            $('.updated-time').text(now.toLocaleString());
+            
+            var tweets = $('.tweets');
+            tweets.html('');
+            
+            var template = $('#tweet-template').html();
+            data.latest.forEach(function(tweet) {
+                var el = $(template);
+                var created_at = new Date(tweet.created_at);
+                el.find('.tweet-author').text("@" + tweet.user_screen_name);
+                el.find('.tweet-text').text(tweet.text);
+                el.find('.tweet-time').html(created_at.toLocaleString());
+                tweets.append(el);
+            });
+        };
+    
+        var update = function() {
+            $.get(window.urls.update)
+                .done(function(response) {
+                    render(response);
+                })
+                .error(function(err, xhr) {
+                    console.log("Failed to update");
+                    console.log(err, xhr);
+                });
+        };
+    
+        $(document).ready(function() {
+            render(window.initial_data);
+            setInterval(update, 20000);
+        });
+    </script>
   </body>
 </html>
