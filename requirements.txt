@@ -1,0 +1,5 @@
+twitter-monitor==0.2.1
+MySQL-python==1.2.5
+Fabric==1.8.3
+Jinja2==2.7.2
+bottle==0.12.5
