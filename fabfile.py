@@ -52,8 +52,6 @@ def setup():
         username = env.user
         
         
-        
-        local('mkdir -p %s' % run_files)
         local('touch %s' % trackfile)
         
         _save_template(supervisord_conf, 'templates/supervisord.conf', {
@@ -79,11 +77,12 @@ def setup():
         local('chmod 660 %s' % ini_file)
         
         print "Final steps:"
-        print "1. Sudo copy upstart.conf to /etc/init/%s.conf or whatever." % app_name
-        print "2. Create a MySQL database and user for storing tweets."
-        print "3. Add your Twitter API info and database info to %s" % ini_file
-        print "4. Edit the tracking terms in %s" % trackfile
-        print "5. Start the stream with 'fab start'."
+        print "1. Create the run directory: mkdir -p %s" % run_files
+        print "2. Sudo copy upstart.conf to /etc/init/%s.conf or whatever." % app_name
+        print "3. Create a MySQL database and user for storing tweets."
+        print "4. Add your Twitter API info and database info to %s" % ini_file
+        print "5. Edit the tracking terms in %s" % trackfile
+        print "6. Start the stream with 'fab start'."
 
 def stop(*args):
     """Stop one or more supervisor processes"""
